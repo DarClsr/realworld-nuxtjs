@@ -56,5 +56,5 @@ jobs:
           cd /data/realworld-nuxtjs
           wget https://github.com/DarClsr/realworld-nuxtjs/releases/latest/download/release.tgz -O release.tgz
           tar zxvf release.tgz
-          npm install --production
+          yarn install --production
           pm2 reload pm2.config.json
