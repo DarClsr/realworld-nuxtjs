@@ -3,7 +3,7 @@
 // 配置文件
 
 module.exports = {
-    plugins:['~/plugins/http.js','~/plugins/dayjs.js'],
+    plugins: ['~/plugins/http.js', '~/plugins/dayjs.js'],
     router: {
         linkActiveClass: "active",
         // base: '/app/',
@@ -50,8 +50,18 @@ module.exports = {
 
         }
     },
-    server:{
-        host:"0.0.0.0",
-        port:3000
+    head: {
+        meta: [
+            { charset: 'utf-8' },
+            { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+            { hid: 'description', name: 'description', content: 'description' }
+        ],
+        link: [
+            { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' } // 配置favicon.ico，需要将图片放到static目录下
+        ]
+    },
+    server: {
+        host: "0.0.0.0",
+        port: 3000
     }
 }
