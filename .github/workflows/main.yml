@@ -53,9 +53,9 @@ jobs:
         password: ${{ secrets.PASSWORD }}
         port: ${{ secrets.PORT }}
         proxy_host: ${{ secrets.HOST }}
-+       proxy_username: ${{ secrets.USERNAME }}
-+       proxy_key: ${{ secrets.DEPLOY_KEY }}
-+       proxy_port: ${{ secrets.PORT }}
+        proxy_username: ${{ secrets.USERNAME }}
+        proxy_key: ${{ secrets.DEPLOY_KEY }}
+        proxy_port: ${{ secrets.PORT }}
         script: |
           cd /data/realworld-nuxtjs
           wget https://github.com/DarClsr/realworld-nuxtjs/releases/latest/download/release.tgz -O release.tgz
