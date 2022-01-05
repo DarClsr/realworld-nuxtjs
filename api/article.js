@@ -27,9 +27,12 @@ export const removeFavior= (slug)=>{
 }
 
 // 文章详情
-
 export const articleInfo= (slug)=>{
     return http.get(`/articles/${slug}`)
+}
+
+export const addArticle= (params)=>{
+    return http.post(`/articles`,params)
 }
 
 // 评论文章
@@ -38,7 +41,6 @@ export const postComment= (slug)=>{
 }
 
 // 文章评论列表
-
 export const articleComments= (slug)=>{
     return http.get(`/articles/${slug}、comm`)
 }

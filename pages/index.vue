@@ -12,9 +12,9 @@
         <div class="col-md-9">
           <div class="feed-toggle">
             <ul class="nav nav-pills outline-active">
-              <li class="nav-item">
+              <li class="nav-item" v-if="userInfo">
                 <nuxt-link
-                  :to="{ name: 'home', query: { tab: 'your_feed' } }"
+                  :to="{ name: 'home', query: { tab: 'your_feed', } }"
                   :class="{ active: tab === 'your_feed' }"
                   class="nav-link"
                   exact
@@ -27,15 +27,15 @@
                   :to="{ name: 'home', query: { tab: 'gloab_feed' } }"
                   class="nav-link"
                   exact
-                  :class="{ active: tab === 'global_feed' }"
+                  :class="{ active: (tab === 'global_feed'&&!tag) }"
                 >
                   Global Feed
                 </nuxt-link>
               </li>
               <li class="nav-item" v-if="tag">
                 <nuxt-link
-                  :to="{ name: 'home', query: { tab: tag, tag } }"
-                  :class="{ active: tab === tag }"
+                  :to="{ name: 'home', query: { tab: tag,  } }"
+                  :class="{ active: tag === tag }"
                   class="nav-link"
                   exact
                 >
@@ -132,7 +132,7 @@
                 :to="{ name: 'home', query: { tag: tagItem } }"
                 v-for="tagItem in tagList"
                 :key="tagItem"
-              ></nuxt-link>
+              >{{tagItem}}</nuxt-link>
             </div>
           </div>
         </div>
@@ -148,12 +148,15 @@ import {
   faviorArticle,
   removeFavior,
 } from "@/api/article.js";
+import { mapState } from "vuex";
+
 export default {
   name: "home",
   async asyncData({ query, store }) {
     const limit = 2;
     const page = Number.parseInt(query.page || 1);
     const tab = query.tab || "global_feed";
+    const tag=query.tag||""
 
     const loadArticle =
       store.state.user && tab === "your_feed" ? favorArcticles : getArticles;
@@ -161,10 +164,12 @@ export default {
       loadArticle({
         limit: limit,
         offset: (page - 1) * limit,
-        tag: query.tag,
+        tag
       }),
       getTags(),
     ]);
+
+
     const { articles, articlesCount } = articlesRes.data;
     articles.forEach((article) => (article.disabled = false));
     return {
@@ -172,7 +177,7 @@ export default {
       articlesCount,
       limit,
       page,
-      tag: "tag",
+      tag,
       tab,
       tagList: tagRes.data.tags,
     };
@@ -182,6 +187,9 @@ export default {
     pages() {
       return Math.ceil(this.articlesCount / this.limit);
     },
+     ...mapState({
+      userInfo: (state) => state.user,
+    }),
   },
   methods: {
     async toggleFeed(item) {
