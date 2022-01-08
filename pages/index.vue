@@ -46,55 +46,11 @@
           </div>
 
           <div v-if="articles.length > 0">
-            <div
-              class="article-preview"
+            <article-item
               v-for="article in articles"
               :key="article.slug"
-            >
-              <div class="article-meta">
-                <nuxt-link
-                  :to="{
-                    name: 'profile',
-                    params: { username: article.author.username },
-                  }"
-                >
-                  <img :src="article.author.image" />
-                </nuxt-link>
-                <div class="info">
-                  <nuxt-link
-                    :to="{
-                      name: 'profile',
-                      params: { slug: article.author.username },
-                    }"
-                  >
-                    {{ article.author.username }}
-                  </nuxt-link>
-                  <span class="date">{{ article.updatedAt }}</span>
-                </div>
-                <button
-                  class="btn btn-outline-primary btn-sm pull-xs-right"
-                  :class="{ active: article.favorited }"
-                  :disabled="article.disabled"
-                  @click="toggleFeed(article)"
-                >
-                  <i class="ion-heart"></i> {{ article.favoritesCount }}
-                </button>
-              </div>
-
-              <nuxt-link
-                class="preview-link"
-                :to="{
-                  name: 'article',
-                  params: {
-                    id: article.slug,
-                  },
-                }"
-              >
-                <h1>{{ article.title }}</h1>
-                <p>{{ article.body }}</p>
-                <span>Read more...</span>
-              </nuxt-link>
-            </div>
+              :article="article"
+            />
           </div>
 
           <div v-else>
@@ -149,22 +105,33 @@ import {
   removeFavior,
 } from "@/api/article.js";
 import { mapState } from "vuex";
+import ArticleItem from "@/components/article-item";
+
 
 export default {
+  components:{
+    ArticleItem
+  },
   name: "home",
   async asyncData({ query, store }) {
     const limit = 2;
     const page = Number.parseInt(query.page || 1);
     const tab = query.tab || "global_feed";
-    const tag=query.tag||""
+    const tag=query.tag||"";
+    const loadParams=tag?{
+        limit: limit,
+        offset: (page - 1) * limit,
+        tag
+    }:{
+      limit: limit,
+        offset: (page - 1) * limit,
+    }
 
     const loadArticle =
       store.state.user && tab === "your_feed" ? favorArcticles : getArticles;
     const [articlesRes, tagRes] = await Promise.all([
       loadArticle({
-        limit: limit,
-        offset: (page - 1) * limit,
-        tag
+        ...loadParams
       }),
       getTags(),
     ]);

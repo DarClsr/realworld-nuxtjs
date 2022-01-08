@@ -20,6 +20,7 @@
           </li>
           <li class="nav-item">
             <nuxt-link :to="`/profile/${userInfo.username}`" class="nav-link">
+            {{userInfo.image}}
               <img class="user-pic" :src="userInfo.image" />
               {{ userInfo.username }}
             </nuxt-link>
@@ -46,5 +47,8 @@ export default {
       userInfo: (state) => state.user,
     }),
   },
+  mounted(){
+    console.log(this.userInfo)
+  }
 };
 </script>

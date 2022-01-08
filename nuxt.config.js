@@ -33,7 +33,7 @@ module.exports = {
                 },
                 {
                     name: "editor",
-                    path: "/editor",
+                    path: "/editor/:id?", 
                     component: reslove(__dirname, "pages/editor")
                 },
                 {

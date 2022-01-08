@@ -20,3 +20,8 @@ export const profile= (username)=>{
 export const updateInfo= (params)=>{
     return http.put('/user',params)
 } 
+
+// 获取自己的用户信息
+export const getProfile= ()=>{
+    return http.get("/user");
+}

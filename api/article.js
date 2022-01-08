@@ -31,23 +31,21 @@ export const articleInfo= (slug)=>{
     return http.get(`/articles/${slug}`)
 }
 
+// 添加文章
 export const addArticle= (params)=>{
     return http.post(`/articles`,params)
 }
 
-// 评论文章
-export const postComment= (slug)=>{
-    return http.post(`/articles/${slug}`)
+//b编辑文章
+export const editArticle= (slug,params)=>{
+    return http.put(`/articles/${slug}`,params)
 }
 
-// 文章评论列表
-export const articleComments= (slug)=>{
-    return http.get(`/articles/${slug}、comm`)
-}
-
-// 删除评论
-export const removeComment= (slug)=>{
+//删除文章
+export const removeArticle= (slug)=>{
     return http.delete(`/articles/${slug}`)
 }
+
+
 
  

@@ -69,14 +69,14 @@
 </template>
 
 <script>
-import { addArticle } from "@/api/article";
+import { addArticle, articleInfo,editArticle } from "@/api/article";
+
 export default {
   middleware: "auth",
   data() {
     return {
       tag: "",
       error: false,
-
       article: {
         title: "",
         description: "",
@@ -85,7 +85,17 @@ export default {
       },
     };
   },
+  mounted(){
+    this.getArticle()
+  },
   methods: {
+    async getArticle() {
+      const slug = this.$route.params.id;
+      if (!slug) return false;
+      const articleRes = await articleInfo(slug);
+      const article = articleRes.data.article;
+      this.article=article;
+    },
     addTag() {
       this.error = false;
       const has = this.article.tagList.find((v) => v == this.tag);
@@ -95,13 +105,13 @@ export default {
       } else {
         this.error = true;
       }
-
     },
     removeTag(i) {
       this.article.tagList.splice(i, 1);
     },
     async confirmAticle() {
-      const res = await addArticle({
+      const slug = this.$route.params.id;
+      const res =slug?await editArticle(slug,{article:this.article}):  await addArticle({
         article: this.article,
       });
       if (res.status == 200) {
@@ -113,7 +123,6 @@ export default {
           },
         });
       }
-      console.log(res);
     },
   },
 };
