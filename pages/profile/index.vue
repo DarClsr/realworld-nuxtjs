@@ -9,9 +9,21 @@
             <p>
               {{ user.bio }}
             </p>
-            <button class="btn btn-sm btn-outline-secondary action-btn">
+            <template v-if="isProfile">
+             <nuxt-link to="/settings" class="btn btn-sm btn-outline-secondary action-btn">
+             <i class="ion-gear-a"></i> Edit Profile Settings
+            </nuxt-link>
+            </template>
+            <button
+              class="btn btn-sm btn-outline-secondary"
+              @click="toogleFollow(user.following)"
+              :disabled="disabled"
+              v-else
+              :class="{ active: user.following }"
+            >
               <i class="ion-plus-round"></i>
-              &nbsp; Follow {{ user.username }}
+              &nbsp; {{ user.following ? "unFollow" : "Follow" }}
+              {{ user.username }} {{ user.following }}
             </button>
           </div>
         </div>
@@ -99,9 +111,11 @@
 </template>
 
 <script>
-import { profile } from "@/api/user";
-import { getArticles, favorArcticles } from "@/api/article.js";
+import { profile,removeFollow,followUser } from "@/api/user";
+import { getArticles } from "@/api/article.js";
 import ArticleItem from "@/components/article-item";
+import { mapState } from "vuex";
+
 export default {
   middleware: "auth",
   components: {
@@ -111,18 +125,38 @@ export default {
     pages() {
       return Math.ceil(this.articlesCount / this.limit);
     },
+    ...mapState({
+      userInfo: (state) => state.user,
+    }),
+    isProfile() {
+      return this.user.username === this.userInfo.username;
+    },
   },
-  head(){
+  data(){
     return {
-      title:`${this.user.username}`,
-      meta:[
-        {
-        content:this.user.bio,
-        name:"description",
-        hid:"description"
-      }
-      ]
+      disabled:false,
     }
+  },
+  head() {
+    return {
+      title: `${this.user.username}`,
+      meta: [
+        {
+          content: this.user.bio,
+          name: "description",
+          hid: "description",
+        },
+      ],
+    };
+  },
+  methods:{
+    async toogleFollow(follow){
+      this.disabled = true;
+     const res=follow? await removeFollow(this.user.username):await followUser(this.user.username);
+      this.disabled = false;
+      this.user=res.data.profile
+
+   },
   },
   async asyncData({ params, query }) {
     const limit = 2;
@@ -136,8 +170,8 @@ export default {
         : {
             author: params.username,
           };
- 
-    const [userRes, articleRes] =await Promise.all([
+
+    const [userRes, articleRes] = await Promise.all([
       profile(params.username),
       getArticles({
         limit: limit,
@@ -147,7 +181,7 @@ export default {
     ]);
     const { articles, articlesCount } = articleRes.data;
     return {
-      user:userRes.data.profile,
+      user: userRes.data.profile,
       myArticles: articles,
       articlesCount,
       tab,

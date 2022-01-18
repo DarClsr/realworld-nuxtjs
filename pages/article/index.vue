@@ -3,7 +3,7 @@
     <div class="banner">
       <div class="container">
         <h1>{{ article.title }}</h1>
-        <article-meta :article="article" />
+        <article-meta @follow="setProfile" @feed="setFeed" :article="article" />
       </div>
     </div>
 
@@ -19,7 +19,7 @@
       <hr />
 
       <div class="article-actions">
-        <article-meta :article="article" />
+        <article-meta @follow="setProfile" @feed="setFeed" :article="article" />
       </div>
 
       <comments :slug="article.slug" /> 
@@ -50,7 +50,14 @@ export default {
     ArticleMeta,
     Comments
   },
-  
+  methods:{
+    setProfile(profile){
+      this.$set(this.article,"author",profile)
+    },
+    setFeed(article){
+      this.article=article;
+    }
+  },
   head(){
     return {
       title:`${this.article.title}`,

@@ -25,3 +25,12 @@ export const updateInfo= (params)=>{
 export const getProfile= ()=>{
     return http.get("/user");
 }
+
+// 关注用户
+export const followUser =(username)=>{
+    return http.post(`/profiles/${username}/follow`)
+}
+// 取消关注
+export const removeFollow =(username)=>{
+    return http.delete(`/profiles/${username}/follow`)
+}

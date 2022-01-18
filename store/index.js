@@ -1,4 +1,7 @@
-const cookieparser = process.server ? require('cookieparser') : undefined
+const cookieparser = process.server ? require('cookieparser') : undefined;
+
+import {getProfile} from "@/api/user";
+
 export const state = () => {
     return {
         user: null
@@ -23,5 +26,13 @@ export const actions = {
             }
         }
         commit('setUser', auth)
-    }
+    },
+    async getProfile({commit}){
+        const res=await getProfile();
+        if(res.status==200){
+            const user=res.data.user;
+           commit("setUser",user)
+          return user;
+        }
+    },
 }

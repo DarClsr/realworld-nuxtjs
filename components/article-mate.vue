@@ -30,18 +30,21 @@
     <template v-else>
       <button
         class="btn btn-sm btn-outline-secondary"
+        @click="toogleFollow(article.author.following)"
+        :disabled="disabled"
         :class="{ active: article.author.following }"
       >
         <i class="ion-plus-round"></i>
-        &nbsp; Follow{{ article.author.username }}
-        <span class="counter">({{ article.favoritesCount }})</span>
+        &nbsp; {{article.author.following?'unFollow':"Follow"}} {{ article.author.username }} {{ article.author.following}}
       </button>
       <button
         class="btn btn-sm btn-outline-primary"
         :class="{ active: article.favorited }"
+        :disabled="disabled"
+       @click="toggleFeed"
       >
         <i class="ion-heart"></i>
-        &nbsp; Favorite Post
+        &nbsp;  {{article.favorited?'Unfavorite Article':"Favorite Post"}}
         <span class="counter">({{ article.favoritesCount }})</span>
       </button>
     </template>
@@ -49,12 +52,19 @@
 </template>
 <script>
 import { mapState } from "vuex";
-import {removeArticle} from "@/api/article"
+import {removeArticle, faviorArticle,
+  removeFavior,} from "@/api/article"
+import {removeFollow,followUser} from "@/api/user"
 export default {
   props: {
     article: {
       type: Object,
     },
+  },
+  data(){
+    return {
+      disabled:false,
+    }
   },
   computed: {
     ...mapState({
@@ -68,7 +78,31 @@ export default {
     async remove(){
       await removeArticle(this.article.slug);
       this.$router.push("/")
-    }
+    },
+    async toogleFollow(follow){
+      this.disabled = true;
+
+     const res=follow? await removeFollow(this.article.author.username):await followUser(this.article.author.username);
+     this.$emit("follow",res.data.profile)
+      this.disabled = false;
+
+   },
+    async toggleFeed() {
+      this.disabled = true;
+      const item=this.article;
+      if (item.favorited) {
+        await removeFavior(item.slug);
+        item.favorited = false;
+        item.favoritesCount -= 1;
+      } else {
+        await faviorArticle(item.slug);
+        item.favorited = true;
+        item.favoritesCount += 1;
+      }
+
+      this.$emit("feed",item);
+      this.disabled = false;
+    },
   }
 };
 </script>
